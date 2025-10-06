@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 import yfinance as yf
 import requests
-import json
 from datetime import datetime
 
 # Telegram Bot ayarları
@@ -47,11 +46,7 @@ def send_telegram_message(message):
         "parse_mode": "Markdown"
     }
     try:
-        response = requests.post(TELEGRAM_API_URL, json=payload, timeout=10)
-        if response.status_code == 200:
-            print("✅ Telegram mesajı başarıyla gönderildi")
-        else:
-            print(f"⚠️ Telegram mesajı gönderilemedi: {response.text}")
+        requests.post(TELEGRAM_API_URL, json=payload, timeout=10)
     except Exception as e:
         print(f"❌ Telegram hatası: {str(e)}")
 
@@ -61,8 +56,6 @@ def main():
     print(f"📊 Toplam {len(SYMBOLS)} hisse analiz edilecek\n")
 
     results = []
-    successful = 0
-    failed = 0
 
     for idx, symbol in enumerate(SYMBOLS, 1):
         try:
@@ -74,7 +67,6 @@ def main():
 
             if df.empty or len(df) < 32:
                 print("❌ Yetersiz veri")
-                failed += 1
                 continue
 
             # RSI ve SMA hesapla
@@ -82,47 +74,38 @@ def main():
             df['RSI_SMA'] = df['RSI'].rolling(window=31).mean()
 
             latest = df.iloc[-1]
+            prev = df.iloc[-2]
 
-            # RSI ve SMA 51-55 arasında mı?
-            if 51 <= latest['RSI'] <= 55 and 51 <= latest['RSI_SMA'] <= 55:
-                result = {
+            # Koşul: SMA 51-55 arasında + RSI önce <51 iken şimdi 51-55 arasında
+            if (51 <= latest['RSI_SMA'] <= 55) and (prev['RSI'] < 51) and (51 <= latest['RSI'] <= 55):
+                results.append({
                     "symbol": symbol.replace('.IS', ''),
                     "rsi": float(latest['RSI']),
                     "sma": float(latest['RSI_SMA'])
-                }
-                results.append(result)
+                })
                 print("✅ Koşul sağlandı")
             else:
                 print("⚪ Koşul sağlanmadı")
 
-            successful += 1
-
         except Exception as e:
             print(f"❌ Hata: {str(e)}")
-            failed += 1
 
     # Özet
     print("\n" + "="*50)
     print("📊 ANALIZ SONUÇLARI")
     print("="*50)
-    print(f"✅ Başarılı: {successful}")
-    print(f"❌ Başarısız: {failed}")
-    print(f"🎯 51-55 RSI&SMA: {len(results)} hisse")
+    print(f"🎯 RSI<51'den çıkıp 51-55 aralığında + SMA 51-55: {len(results)} hisse")
     print("="*50 + "\n")
 
     # Telegram mesajı
     message_parts = []
     message_parts.append(f"*📈 BIST 100 RSI Tarayıcı*")
     message_parts.append(f"📅 {datetime.now().strftime('%d.%m.%Y %H:%M')}\n")
-    message_parts.append(f"*🎯 RSI & SMA 51-55 ({len(results)} hisse):*")
+    message_parts.append(f"*🎯 RSI <51'den çıkıp 51-55 aralığında & SMA 51-55 ({len(results)} hisse):*")
 
     if results:
-        for stock in results[:50]:
-            message_parts.append(
-                f"• {stock['symbol']}: RSI {stock['rsi']:.2f} | SMA {stock['sma']:.2f}"
-            )
-        if len(results) > 50:
-            message_parts.append(f"... ve {len(results) - 50} hisse daha")
+        for stock in results:
+            message_parts.append(f"• {stock['symbol']}: RSI {stock['rsi']:.2f} | SMA {stock['sma']:.2f}")
     else:
         message_parts.append("Koşulu sağlayan hisse yok")
 
