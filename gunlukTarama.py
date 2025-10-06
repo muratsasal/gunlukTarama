@@ -6,7 +6,7 @@ from datetime import datetime
 
 # Telegram Bot ayarları
 TELEGRAM_TOKEN = "8256592463:AAHlJ3BQSvwUDOQuKCYAhKwAwMMWUFJXE4o"
-CHAT_ID = "1008660822"
+CHAT_ID = "-1003198250448"
 TELEGRAM_API_URL = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
 
 # BIST 100 sembol listesi
@@ -99,7 +99,7 @@ def main():
 
     # Telegram mesajı
     message_parts = []
-    message_parts.append(f"*📈 BIST 100 RSI Tarayıcı*")
+    message_parts.append(f"*📈 BIST 100 kısa vade yükseliş potansiyeli olanlar*")
     message_parts.append(f"📅 {datetime.now().strftime('%d.%m.%Y %H:%M')}\n")
     message_parts.append(f"*🎯 RSI <51'den çıkıp 51-55 aralığında & SMA 51-55 ({len(results)} hisse):*")
 
@@ -116,3 +116,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
