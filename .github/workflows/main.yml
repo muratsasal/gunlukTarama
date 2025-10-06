@@ -27,7 +27,7 @@ jobs:
     
     - name: BIST analizi çalıştır
       run: |
-        python bist_analyzer.py
+        python gunlukTarama.py
     
     - name: Sonuçları commit et
       run: |
