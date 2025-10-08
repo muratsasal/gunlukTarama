@@ -9,7 +9,7 @@ TELEGRAM_TOKEN = "8256592463:AAHlJ3BQSvwUDOQuKCYAhKwAwMMWUFJXE4o"
 CHAT_ID = "-1003198250448"
 TELEGRAM_API_URL = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
 
-# BIST 100 sembol listesi
+# BIST  sembol listesi
 SYMBOLS = [
     "A1CAP.IS", "ADEL.IS", "ADESE.IS", "ADGYO.IS", "AEFES.IS", "AFYON.IS",
     "AGESA.IS", "AGHOL.IS", "AGROT.IS", "AHGAZ.IS", "AHSGY.IS", "AKBNK.IS",
@@ -112,7 +112,7 @@ def send_telegram_message(message):
         print(f"❌ Telegram hatası: {str(e)}")
 
 def main():
-    print("🚀 BIST 100 RSI Tarayıcı Başlatıldı")
+    print("🚀 BIST RSI Tarayıcı Başlatıldı")
     print(f"📅 Tarih: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"📊 Toplam {len(SYMBOLS)} hisse analiz edilecek\n")
 
@@ -160,7 +160,7 @@ def main():
 
     # Telegram mesajı
     message_parts = []
-    message_parts.append(f"*📈 BIST 100 kısa vade yükseliş potansiyeli olanlar*")
+    message_parts.append(f"*📈 BIST kısa vade yükseliş potansiyeli olanlar*")
     message_parts.append(f"📅 {datetime.now().strftime('%d.%m.%Y %H:%M')}\n")
     message_parts.append(f"*🎯 RSI <51'den çıkıp 51-55 aralığında & SMA 51-55 ({len(results)} hisse):*")
 
@@ -177,5 +177,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
